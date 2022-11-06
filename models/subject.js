@@ -5,7 +5,7 @@ module.exports = class Subject extends Sequelize.Model {
     return super.init(
       {
         image: {
-          type: Sequelize.STRING(100),
+          type: Sequelize.STRING(300),
           allowNull: false,
         },
         category: {

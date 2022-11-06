@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.use(cors({ credentials: true }));
 
-router.post("/join", async (req, res, next) => {
+router.post("/register", async (req, res, next) => {
   const { name, email, password, birth } = req.body;
   try {
     const hash = await bcrypt.hash(password, 12);

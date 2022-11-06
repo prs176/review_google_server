@@ -10,20 +10,21 @@ const { verifyToken } = require("./middlewares");
 
 const router = express.Router();
 
+router.use(cors({ credentials: true }));
+
 const upload = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
       cb(null, "uploads/");
     },
     filename(req, file, cb) {
+      console.log(file);
       const ext = path.extname(file.originalname);
       cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
     },
   }),
   limits: { fileSize: 5 * 1024 * 1024 },
 });
-
-router.use(cors({ credentials: true }));
 
 router.get("/", async (req, res, next) => {
   try {
@@ -62,14 +63,16 @@ router.get("/detail/:id", async (req, res, next) => {
         where: { SubjectId: req.params.id },
         attributes: [[sequelize.fn("avg", sequelize.col("raiting")), "raiting"]],
       });
-      const scores = await Score.findAll({
+      let scores = await Score.findAll({
         where: { SubjectId: req.params.id },
         attributes: ["name", [sequelize.fn("avg", sequelize.col("score")), "score"]],
         group: ["name"],
       });
       const keywords = await Keyword.findAll({
         where: { SubjectId: req.params.id },
-        attributes: ["word", "freq"],
+        attributes: ["word", [sequelize.fn("sum", sequelize.col("freq")), "freq"]],
+        order: [["freq", "DESC"]],
+        group: ["word"],
       });
 
       res.json({
@@ -84,8 +87,10 @@ router.get("/detail/:id", async (req, res, next) => {
             from: subject.from,
             count: count,
           },
-          raiting: raiting.raiting,
-          scores,
+          raiting: parseFloat(raiting.raiting, 10),
+          scores: scores.map((score) => {
+            return { name: score.name, score: parseFloat(score.score, 10) };
+          }),
           keywords,
         },
       });
@@ -148,7 +153,7 @@ router.post("/image", verifyToken, upload.single("image"), (req, res) => {
   res.json({
     code: 201,
     message: "이미지가 업로드되었습니다.",
-    response: { url: `/image/${req.file.filename}` },
+    response: `http://localhost:8001/image/${req.file.filename}`,
   });
 });
 

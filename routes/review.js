@@ -23,7 +23,7 @@ router.get("/my", verifyToken, async (req, res, next) => {
       reviewContents.map(async (review) => {
         const scores = await Score.findAll({
           where: { ReviewId: review.id },
-          attributes: ["id", "score", "name"],
+          attributes: ["score", "name"],
         });
         const user = await User.findOne({
           where: { id: review.UserId },
@@ -107,7 +107,7 @@ router.get("/:subjectId", verifyOptionalToken, async (req, res, next) => {
       reviewContents.map(async (review) => {
         const scores = await Score.findAll({
           where: { ReviewId: review.id },
-          attributes: ["id", "score", "name"],
+          attributes: ["score", "name"],
         });
         const user = await User.findOne({
           where: { id: review.UserId },
