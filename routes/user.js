@@ -52,13 +52,13 @@ router.post("/login", async (req, res, next) => {
       } else {
         return res.status(401).json({
           code: 401,
-          message: "잘못된 비밀번호입니다.",
+          message: "잘못된 아이디, 비밀번호입니다.",
         });
       }
     } else {
       return res.status(401).json({
         code: 401,
-        message: "가입되지 않은 이메일입니다.",
+        message: "잘못된 아이디, 비밀번호입니다.",
       });
     }
   } catch (err) {

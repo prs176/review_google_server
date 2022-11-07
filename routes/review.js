@@ -103,7 +103,7 @@ router.get("/:subjectId", verifyOptionalToken, async (req, res, next) => {
           }
     );
 
-    const reviews = await Promise.all(
+    var reviews = await Promise.all(
       reviewContents.map(async (review) => {
         const scores = await Score.findAll({
           where: { ReviewId: review.id },
@@ -138,11 +138,24 @@ router.get("/:subjectId", verifyOptionalToken, async (req, res, next) => {
         };
       })
     );
-
     if (req.query.sort === "popular") {
-      reviews.sort((review1, review2) => {
-        review1.good - review2.good;
-      });
+      reviews = reviews
+        .sort((review1, review2) => review2.good - review1.good)
+        .map((review) => {
+          return {
+            id: review.id,
+            title: review.title,
+            content: review.content,
+            raiting: review.raiting,
+            scores: review.scores,
+            user: review.user,
+            good: review.good,
+            bad: review.bad,
+            isMine: review.isMine,
+            isGood: review.isGood,
+            isBad: review.isBad,
+          };
+        });
     }
 
     res.json({
@@ -348,9 +361,9 @@ router.delete("/:id", verifyToken, async (req, res, next) => {
     const review = await Review.findOne({ where: { id: req.params.id } });
     if (review) {
       if (review.UserId === req.decoded.id) {
-        await review.destroy();
         await Score.destroy({ where: { reviewId: req.params.id } });
         await Keyword.destroy({ where: { reviewId: req.params.id } });
+        await review.destroy();
 
         res.json({
           code: 201,

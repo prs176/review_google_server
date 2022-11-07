@@ -9,7 +9,7 @@ module.exports = class Review extends Sequelize.Model {
           allowNull: false,
         },
         content: {
-          type: Sequelize.STRING(300),
+          type: Sequelize.STRING(500),
           allowNull: false,
         },
         raiting: {
