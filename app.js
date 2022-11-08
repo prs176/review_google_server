@@ -11,6 +11,7 @@ const subjectRouter = require("./routes/subject");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");
 const reportRouter = require("./routes/report");
+const pageRouter = require("./routes/page");
 const { sequelize } = require("./models");
 
 const app = express();
@@ -32,7 +33,7 @@ try {
 }
 
 app.use(morgan("dev"));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "front/build")));
 app.use("/image", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -53,6 +54,7 @@ app.use("/subject", subjectRouter);
 app.use("/review", reviewRouter);
 app.use("/user", userRouter);
 app.use("/report", reportRouter);
+app.use("/", pageRouter);
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
