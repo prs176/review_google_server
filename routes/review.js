@@ -214,7 +214,6 @@ router.post("/", verifyToken, async (req, res, next) => {
 
 router.post("/good/:id", verifyToken, async (req, res, next) => {
   try {
-    //
     const review = await Review.findOne({ where: { id: req.params.id } });
     if (review) {
       await review.addGoodMarkUsers(parseInt(req.decoded.id, 10));
@@ -237,7 +236,6 @@ router.post("/good/:id", verifyToken, async (req, res, next) => {
 
 router.post("/notgood/:id", verifyToken, async (req, res, next) => {
   try {
-    //
     const review = await Review.findOne({ where: { id: req.params.id } });
     if (review) {
       await review.removeGoodMarkUsers(parseInt(req.decoded.id, 10));
